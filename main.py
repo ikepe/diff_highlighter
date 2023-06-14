@@ -1,27 +1,17 @@
-from Levenshtein import editops
 from colorama import Fore, Style
 
-def print_colored_diff_a(str_a, ops):
-    i = 0
-    for op in ops:
-        while i < op[1]:
-            print(str_a[i], end='')
-            i += 1
-        if op[0] == 'replace' or op[0] == 'delete':
-            print(Fore.RED + str_a[i] + Style.RESET_ALL, end='')
-            i += 1
-    print(str_a[i:], end='')
-
-def print_colored_diff_b(str_b, ops):
-    j = 0
-    for op in ops:
-        while j < op[2]:
-            print(str_b[j], end='')
-            j += 1
-        if op[0] == 'replace' or op[0] == 'insert':
-            print(Fore.GREEN + str_b[j] + Style.RESET_ALL, end='')
-            j += 1
-    print(str_b[j:], end='')
+def highlight_diff(str_a, str_b):
+    min_len = min(len(str_a), len(str_b))
+    same_chars = 0
+    for i in range(min_len):
+        if str_a[i] != str_b[i]:
+            print(Fore.RED + str_b[i] + Style.RESET_ALL, end='')
+        else:
+            print(str_b[i], end='')
+            same_chars += 1
+    if len(str_b) > min_len:  # In case str_b is longer than str_a
+        print(Fore.RED + str_b[min_len:] + Style.RESET_ALL, end='')
+    return same_chars
 
 def main():
     print("文字列Aを入力してください:")
@@ -31,15 +21,16 @@ def main():
 
     print("\n差分を表示します\n")
 
-    ops = editops(str_a, str_b)
-
-    print("A\n", end='')
-    print_colored_diff_a(str_a, ops)
-
-    print("\nB\n", end='')
-    print_colored_diff_b(str_b, ops)
+    print("A:", str_a)
+    print("\n")
+    print("B: ", end='')
+    same_chars = highlight_diff(str_a, str_b)
 
     print()
+
+    print(f"\nA: {len(str_a)}文字")
+    print(f"B: {len(str_b)}文字")
+    print(f"先頭{same_chars}文字まで一致しました")
 
 if __name__ == "__main__":
     main()
